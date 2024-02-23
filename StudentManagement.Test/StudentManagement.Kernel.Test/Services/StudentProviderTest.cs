@@ -1,4 +1,3 @@
-using System.Dynamic;
 using StudentManagement.Kernel.Models;
 using StudentManagement.Kernel.Services.DataProvider;
 using Xunit;
@@ -11,7 +10,7 @@ public class StudentProviderTest
 
     public StudentProviderTest()
     {
-        _studentProvider = (MockStudentProvider)MockStudentProvider.CreateMockInstance();
+        _studentProvider = MockStudentProvider.CreateInstance();
     }
 
     [Fact]
@@ -39,10 +38,44 @@ public class StudentProviderTest
         Assert.False(result);
     }
 
+    [Fact]
+    public void GetAllStudents_WithData_AnyReturnTrue()
+    {
+        _studentProvider.SeedData();
+        var result = _studentProvider.GetAllStudents();
+
+        Assert.True(result.Any());
+    }
+
+    [Fact]
+    public void GetAllStudents_WithoutData_AnyReturnFalse()
+    {
+        _studentProvider.ClearData();
+        var result = _studentProvider.GetAllStudents();
+
+        Assert.False(result.Any());
+    }
+
     protected class MockStudentProvider : StudentProvider
     {
         protected MockStudentProvider() : base()
         {
+        }
+
+        public void AddMockStudent(Student student)
+        {
+            _entries.Add(student.StudentId, student);
+        }
+
+        public static new MockStudentProvider CreateInstance()
+        {
+            return new MockStudentProvider();
+        }
+
+        public void SeedData()
+        {
+            ClearData();
+
             // insert dummy data
             for (int count = 1; count <= 10; count++)
             {
@@ -57,14 +90,9 @@ public class StudentProviderTest
             }
         }
 
-        public void AddMockStudent(Student student)
+        public void ClearData()
         {
-            _entries.Add(student.StudentId, student);
-        }
-
-        public static MockStudentProvider CreateMockInstance()
-        {
-            return new MockStudentProvider();
+            _entries.Clear();
         }
     }
 }

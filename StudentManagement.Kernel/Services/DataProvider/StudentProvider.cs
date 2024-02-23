@@ -33,7 +33,7 @@ public class StudentProvider : IDataProvider
 
     public List<Student> GetAllStudents()
     {
-        throw new NotImplementedException();
+        return _entries.Values.ToList();
     }
 
     public Student GetStudent(string studentId)
