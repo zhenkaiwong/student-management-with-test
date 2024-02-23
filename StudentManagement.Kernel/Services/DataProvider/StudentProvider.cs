@@ -23,7 +23,12 @@ public class StudentProvider : IDataProvider
 
     public bool DeleteStudent(string studentId)
     {
-        throw new NotImplementedException();
+        if (!_entries.ContainsKey(studentId))
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public List<Student> GetAllStudents()

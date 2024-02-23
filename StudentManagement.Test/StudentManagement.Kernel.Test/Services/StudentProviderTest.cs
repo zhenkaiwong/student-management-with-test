@@ -1,3 +1,4 @@
+using System.Dynamic;
 using StudentManagement.Kernel.Models;
 using StudentManagement.Kernel.Services.DataProvider;
 using Xunit;
@@ -6,23 +7,36 @@ namespace StudentManagement.Test.StudentManagement.Kernel.Test.Services;
 
 public class StudentProviderTest
 {
-    IDataProvider? _studentProvider = null;
+    MockStudentProvider? _studentProvider = null;
 
     public StudentProviderTest()
     {
-        _studentProvider = MockStudentProvider.CreateInstance();
+        _studentProvider = (MockStudentProvider)MockStudentProvider.CreateMockInstance();
     }
 
     [Fact]
     public void DeleteStudent_StudentExist_ReturnTrue()
     {
+        var student = new Student()
+        {
+            StudentId = "TestStudentID",
+            Name = "Test student",
+            Class = "Test calss"
+        };
 
+        _studentProvider.AddMockStudent(student);
+
+        var result = _studentProvider.DeleteStudent(student.StudentId);
+
+        Assert.True(result);
     }
 
     [Fact]
     public void DeleteStudent_StudentNotExist_ReturnFalse()
     {
+        var result = _studentProvider.DeleteStudent("Fake student ID");
 
+        Assert.False(result);
     }
 
     protected class MockStudentProvider : StudentProvider
@@ -41,6 +55,16 @@ public class StudentProviderTest
 
                 _entries.Add(student.StudentId, student);
             }
+        }
+
+        public void AddMockStudent(Student student)
+        {
+            _entries.Add(student.StudentId, student);
+        }
+
+        public static MockStudentProvider CreateMockInstance()
+        {
+            return new MockStudentProvider();
         }
     }
 }
